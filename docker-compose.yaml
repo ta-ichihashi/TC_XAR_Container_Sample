@@ -1,0 +1,55 @@
+networks:
+  container-network:
+    name: container-network
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.20.0/24
+          gateway: 192.168.20.1
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    hostname: mosquitto
+    ports:
+      - "1883:1883"
+    restart: unless-stopped
+    volumes:
+      - ./simple-mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    networks:
+      container-network:
+        ipv4_address: 192.168.20.2
+
+  tc31-xar-base:
+    image: tc31-xar-base:latest
+    container_name: tc31-xar-base
+    hostname: tc31-xar-base
+    restart: unless-stopped
+    depends_on:
+      - mosquitto
+    privileged: true
+    volumes:
+      - /dev/hugepages:/dev/hugepages:rw
+    networks:
+      container-network:
+        ipv4_address: 192.168.20.3
+    # Use PCI_DEVICES as environment variables to specify the Ethernet
+    # controllers which can be used by the TwinCAT runtime for real-time
+    # ethernet communication.
+    # If PCI_DEVICES is not provided at all, TwinCAT will probe all
+    # available Ethernet controllers of the host for real-time ethernet communication.
+    # If PCI_DEVICES is set to NONE, the TwinCAT runtime won't use probe
+    # any PCI Ethernet controller for real-time ethernet communicaion.
+    # Set PCI_DEVICES to a space seperated list of PCI slot address
+    # to explicitly set Ethernet controllers for real-time ethernet communication.
+    # Run `sudo TcRteInstall -l` on the host to get a list of available
+    # Ethernet controllers and their PCI slot address
+    # Examples:
+    #  #- PCI_DEVICES=NONE
+    #  - PCI_DEVICES=NONE
+    #  - PCI_DEVICES=0000:02:00.0
+    #  - PCI_DEVICES=0000:04:00.0 0000:03:00.0
+    environment:
+      #- PCI_DEVICES=NONE
+      - AMS_NETID=15.15.15.15.1.1
