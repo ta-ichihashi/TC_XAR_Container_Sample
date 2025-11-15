@@ -287,20 +287,18 @@ class View:
 if __name__ == '__main__':
     View.get_settings()
     if platform.system() == 'Linux':
-        RouterConfiguration(target_host=View.settings_data["container"][0]["host"],
-                            my_host=View.settings_data["my_host"],
-                            my_ams_id=View.settings_data["my_ams_net_id"],
-                            route_name="tc31-xar-1",
-                            login_user="Administrator",
-                            login_password="1"
-                            )
+        RouterConfiguration.target_host = View.settings_data["container"][0]["host"]
+        RouterConfiguration.my_host=View.settings_data["my_host"]
+        RouterConfiguration.my_ams_id=View.settings_data["my_ams_net_id"]
+        RouterConfiguration.route_name="tc31-xar-1"
+        RouterConfiguration.login_user="Administrator"
+        RouterConfiguration.login_password="1"
         RouterConfiguration.add_route()
-        RouterConfiguration(target_host=View.settings_data["container"][1]["host"],
-                            my_host=View.settings_data["my_host"],
-                            my_ams_id=View.settings_data["my_ams_net_id"],
-                            route_name="tc31-xar-2",
-                            login_user="Administrator",
-                            login_password="1"
-                            )
+        RouterConfiguration.target_host = View.settings_data["container"][1]["host"]
+        RouterConfiguration.my_host=View.settings_data["my_host"]
+        RouterConfiguration.my_ams_id=View.settings_data["my_ams_net_id"]
+        RouterConfiguration.route_name="tc31-xar-2"
+        RouterConfiguration.login_user="Administrator"
+        RouterConfiguration.login_password="1"
         RouterConfiguration.add_route()
     View.render()
