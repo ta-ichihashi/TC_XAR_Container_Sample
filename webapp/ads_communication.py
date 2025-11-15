@@ -51,26 +51,27 @@ class EventNotificator(Generic[T]):
         except pyads.pyads_ex.ADSError:
             print(f"Symbol not found: {self.symbol}")
 
-@dataclass
 class RouterConfiguration:
-    target_host: str = field(default='192.168.20.3')
-    target_host_name: str = field(default = 'tc-xar-1')
-    my_ams_id: str = field(default='127.0.0.1.1.1')
-    route_name: str = field(default='127.0.0.1')
-    login_user: str = field(default='Administrator')
-    login_password: str = field(default='1')
+    target_host: str = '192.168.20.3'
+    my_host: str = '192.168.3.54'
+    my_ams_id: str = '127.0.0.1.1.1'
+    route_name: str = 'webapp'
+    login_user: str = 'Administrator'
+    login_password: str = '1'
 
-    def connect(self):
+    @classmethod
+    def add_route(cls):
         pyads.open_port()
-        pyads.set_local_address(RouterConfiguration.my_ams_id)
-        pyads.add_route_to_plc(RouterConfiguration.my_ams_id,
-                            RouterConfiguration.target_host_name,
-                            RouterConfiguration.target_host,
-                            RouterConfiguration.login_user,
-                            RouterConfiguration.login_password,
-                            route_name=RouterConfiguration.route_name)
-    def disconnect(self):
-            pyads.close_port()
+        pyads.set_local_address(cls.my_ams_id)
+        pyads.add_route_to_plc(
+            cls.my_ams_id,
+            cls.my_host,
+            cls.target_host,
+            cls.login_user,
+            cls.login_password,
+            route_name=cls.route_name
+            )
+        pyads.close_port()
 
 @dataclass
 class AdsCommunication:
@@ -103,6 +104,9 @@ class AdsCommunication:
 
     def write(self,symbol: str, value, type):
         self.connection.write_by_name(symbol, value, type)
+
+    def disconnect(self):
+        self.connection.close()
 
 
 @dataclass

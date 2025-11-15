@@ -165,7 +165,7 @@ class View:
         with open(toml_file_path, mode="rb") as toml_file:
             cls.settings_data = tomllib.load(toml_file)
         if os.environ.get("CONTAINER1_HOSTNAME") is not None:
-            cls.settings_data[0]["hostname"] = os.environ["CONTAINER1_HOSTNAME"]
+            cls.settings_data["container"][0]["hostname"] = os.environ["CONTAINER1_HOSTNAME"]
         if os.environ.get("CONTAINER2_HOSTNAME") is not None:
             cls.settings_data["container"][1]["hostname"] = os.environ["CONTAINER2_HOSTNAME"]
         if os.environ.get("CONTAINER1_ADDRESS") is not None:
@@ -181,7 +181,9 @@ class View:
         if os.environ.get("CONTAINER2_PLCHMI_URL") is not None:
             cls.settings_data["container"][1]["plc_hmi_url"] = os.environ["CONTAINER2_PLCHMI_URL"]
         if os.environ.get("MY_AMSID") is not None:
-            cls.setting_data["my_ams_net_id"] = os.environ["MY_AMSID"]
+            cls.settings_data["my_ams_net_id"] = os.environ["MY_AMSID"]
+        if os.environ.get("MY_ADDRESS") is not None:
+            cls.settings_data["my_host"] = os.environ["MY_ADDRESS"]
 
     @classmethod
     def render_sidebar(cls):
@@ -285,23 +287,20 @@ class View:
 if __name__ == '__main__':
     View.get_settings()
     if platform.system() == 'Linux':
-        container1 = RouterConfiguration(target_host=View.settings_data["container"][0]["host"],
-                                        target_host_name=View.settings_data["container"][0]["hostname"],
-                                        my_ams_id=View.settings_data["my_ams_net_id"],
-                                        route_name="viewer",
-                                        login_user="Administrator",
-                                        login_password="1"
-                                        )
-        container1.connect()
-        container2 = RouterConfiguration(target_host=View.settings_data["container"][1]["host"],
-                                        target_host_name=View.settings_data["container"][1]["hostname"],
-                                        my_ams_id=View.settings_data["my_ams_net_id"],
-                                        route_name="viewer",
-                                        login_user="Administrator",
-                                        login_password="1"
-                                        )
-        container2.connect()
+        RouterConfiguration(target_host=View.settings_data["container"][0]["host"],
+                            my_host=View.settings_data["my_host"],
+                            my_ams_id=View.settings_data["my_ams_net_id"],
+                            route_name="tc31-xar-1",
+                            login_user="Administrator",
+                            login_password="1"
+                            )
+        RouterConfiguration.add_route()
+        RouterConfiguration(target_host=View.settings_data["container"][1]["host"],
+                            my_host=View.settings_data["my_host"],
+                            my_ams_id=View.settings_data["my_ams_net_id"],
+                            route_name="tc31-xar-2",
+                            login_user="Administrator",
+                            login_password="1"
+                            )
+        RouterConfiguration.add_route()
     View.render()
-    if platform.system() == 'Linux':
-        container1.disconnect()
-        container2.disconnect()
