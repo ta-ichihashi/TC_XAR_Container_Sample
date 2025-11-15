@@ -1,0 +1,66 @@
+# syntax=docker/dockerfile:1
+
+ARG PY_VERSION="3.13.9"
+ARG UV_VERSION="0.9.4"
+
+# UV image stage
+FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
+
+# -- Builder Stage --
+FROM python:${PY_VERSION}-slim-trixie AS builder
+
+ENV UV_SYSTEM_PYTHON=1 \
+    UV_LINK_MODE=copy \
+    UV_COMPILE_BYTECODE=1
+
+RUN --mount=from=uv,source=/uv,target=/bin/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    --mount=type=cache,target=/root/.cache/uv \
+    uv export --frozen --no-dev --no-editable | uv pip install -r -
+
+# prod
+FROM python:${PY_VERSION}-slim-trixie AS prod
+
+RUN apt-get install build-essential
+
+ARG PY_VERSION
+ARG PY_VERSION_MINOR=${PY_VERSION%.*}
+
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR .
+
+COPY --from=builder \
+  /usr/local/lib/python${PY_VERSION_MINOR}/site-packages \
+  /usr/local/lib/python${PY_VERSION_MINOR}/site-packages
+
+# ↓need to copy cli python command
+COPY --from=builder /usr/local/bin/streamlit /usr/local/bin/streamlit
+
+# Create a non-privileged user that the app will run under.
+# See https://docs.docker.com/go/dockerfile-user-best-practices/
+ARG HOST_UID=1000
+ARG HOST_GID=1000
+
+# Create a non-root user and group
+RUN <<EOF bash -eux
+if ! getent group ${HOST_GID} > /dev/null; then
+    groupadd -g ${HOST_GID} appgroup;
+fi
+useradd -u ${HOST_UID} -g ${HOST_GID} -m appuser
+# Change ownership of . sdirectory to appuser
+chown -R appuser:appgroup .
+EOF
+
+COPY --chown=appuser:appgroup . .
+
+# Switch to the non-privileged user to run the application.
+USER appuser
+
+# Expose the port that the application listens on.
+EXPOSE 8501
+
+# Run the application.
+CMD ["streamlit", "run", "main.py", "--browser.gatherUsageStats=false", "--server.headless=true"]
+

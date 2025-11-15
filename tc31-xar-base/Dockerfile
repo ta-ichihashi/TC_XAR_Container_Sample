@@ -23,6 +23,8 @@ RUN --mount=type=secret,id=apt \
     apt-get -o "Dir::Etc::netrc=/run/secrets/apt" update \
     && apt-get -o "Dir::Etc::netrc=/run/secrets/apt" install --yes \
     tc31-xar-um \
+    tf1810-plc-hmi-web \
+    tf5000-nc-ptp-xar \
     && rm -rf /var/lib/apt/lists/*
 
 # As an example, copy basic TwinCAT runtime configurations files
