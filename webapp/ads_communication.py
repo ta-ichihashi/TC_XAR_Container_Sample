@@ -78,6 +78,7 @@ class AdsCommunication:
     ams_net_id: str = field(default='127.0.0.1.1.1')
     ads_port: int = field(default=851, init=True)
     ads_router: RouterConfiguration = field(default=None)
+    host_address : str = field(default='127.0.0.1')
     event_notificators: List[EventNotificator] = field(default_factory=list, init=False)
     connection: pyads.Connection = field(default=None, init=False)
     symbols :List[pyads.symbol.AdsSymbol] = field(default_factory=list, init=False)
@@ -85,7 +86,7 @@ class AdsCommunication:
     def __post_init__(self):
         if self.ads_router is not None:
             self.ads_router.connect()
-        self.connection = pyads.Connection(self.ams_net_id, self.ads_port)
+        self.connection = pyads.Connection(self.ams_net_id, self.ads_port, self.host_address)
         self.connection.open()
         #self.symbols = self.connection.get_all_symbols()
         for symbol in self.symbols:

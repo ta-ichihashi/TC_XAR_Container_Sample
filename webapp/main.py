@@ -59,8 +59,9 @@ class TwinCATTime:
 
 @dataclass
 class JobWatcher:
-    ams_net_id : str = field(default="127.0.0.1.1.1")
-    ads_port : int = field(default=851)
+    ams_net_id : str
+    ads_port : int
+    host_address : str
     view_data   : pd.DataFrame = field(default=None)
     row_size : int = field(default=80)
 
@@ -91,7 +92,8 @@ class JobWatcher:
 @dataclass
 class MotionWatcher:
     ams_net_id : str
-    ads_port : int = field(default=851)
+    ads_port : int
+    host_address : str
     view_data   : pd.DataFrame = field(default_factory=pd.DataFrame)
     row_size : int = field(default=100)
     thining  : int = field(default=100)
@@ -114,10 +116,11 @@ class MotionWatcher:
 @dataclass
 class DynamicRender:
     ams_net_id : str
+    host_address : str
 
     def __post_init__(self):
-        self.job_observer = JobWatcher(ams_net_id=self.ams_net_id)
-        self.motion_observer = MotionWatcher(ams_net_id=self.ams_net_id)
+        self.job_observer = JobWatcher(ams_net_id=self.ams_net_id,ads_port=851,host_address=self.host_address)
+        self.motion_observer = MotionWatcher(ams_net_id=self.ams_net_id,ads_port=501,host_address=self.host_address)
         self.chart_spec = dict()
 
     def render_job_gantt(self, placeholder):
@@ -274,8 +277,8 @@ class View:
             c1_timeline_posdiff = st.empty()
         with cols[1].container(border=True, height="stretch"):
             c2_timeline_posdiff = st.empty()
-        container1_dynamic_render = DynamicRender(cls.settings_data["container"][0]["ams_net_id"])
-        container2_dynamic_render = DynamicRender(cls.settings_data["container"][1]["ams_net_id"])
+        container1_dynamic_render = DynamicRender(cls.settings_data["container"][0]["ams_net_id"], cls.settings_data["container"][0]["host"])
+        container2_dynamic_render = DynamicRender(cls.settings_data["container"][1]["ams_net_id"], cls.settings_data["container"][1]["host"])
         while True:
             container1_dynamic_render.render_job_gantt(c1_jobgannt)
             container2_dynamic_render.render_job_gantt(c2_jobgannt)
@@ -286,18 +289,19 @@ class View:
 
 if __name__ == '__main__':
     View.get_settings()
-    if platform.system() == 'Linux':
+    #if platform.system() == 'Linux':
+    if False:
         RouterConfiguration.target_host = View.settings_data["container"][0]["host"]
         RouterConfiguration.my_host=View.settings_data["my_host"]
         RouterConfiguration.my_ams_id=View.settings_data["my_ams_net_id"]
-        RouterConfiguration.route_name="tc31-xar-1"
+        RouterConfiguration.route_name="webapp"
         RouterConfiguration.login_user="Administrator"
         RouterConfiguration.login_password="1"
         RouterConfiguration.add_route()
         RouterConfiguration.target_host = View.settings_data["container"][1]["host"]
         RouterConfiguration.my_host=View.settings_data["my_host"]
         RouterConfiguration.my_ams_id=View.settings_data["my_ams_net_id"]
-        RouterConfiguration.route_name="tc31-xar-2"
+        RouterConfiguration.route_name="webapp"
         RouterConfiguration.login_user="Administrator"
         RouterConfiguration.login_password="1"
         RouterConfiguration.add_route()
