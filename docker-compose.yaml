@@ -84,6 +84,8 @@ services:
       - CONTAINER2_ADDRESS=192.168.20.4
       - CONTAINER1_AMSID=15.15.15.15.1.1
       - CONTAINER2_AMSID=15.15.15.16.1.1
+      - CONTAINER1_PLCHMI_URL=https://192.168.3.54:42343/Tc3PlcHmiWeb/Port_851/Visu/webvisu.htm
+      - CONTAINER2_PLCHMI_URL=https://192.168.3.54:42344/Tc3PlcHmiWeb/Port_851/Visu/webvisu.htm
     ports:
       - 8501:8501
     volumes:
@@ -97,4 +99,3 @@ volumes:
   xar1data: {}
   xar2data: {}
   streamlit: {}
-

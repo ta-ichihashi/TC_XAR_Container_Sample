@@ -176,6 +176,10 @@ class View:
             cls.settings_data["container"][0]["ams_net_id"] = os.environ["CONTAINER1_AMSID"]
         if os.environ.get("CONTAINER2_AMSID") is not None:
             cls.settings_data["container"][1]["ams_net_id"] = os.environ["CONTAINER2_AMSID"]
+        if os.environ.get("CONTAINER1_PLCHMI_URL") is not None:
+            cls.settings_data["container"][0]["plc_hmi_url"] = os.environ["CONTAINER1_PLCHMI_URL"]
+        if os.environ.get("CONTAINER2_PLCHMI_URL") is not None:
+            cls.settings_data["container"][1]["plc_hmi_url"] = os.environ["CONTAINER2_PLCHMI_URL"]
 
     @classmethod
     def render_sidebar(cls):
