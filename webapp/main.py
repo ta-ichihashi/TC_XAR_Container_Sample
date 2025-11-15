@@ -67,7 +67,9 @@ class JobWatcher:
 
     def __post_init__(self):
         self.view_data = pd.DataFrame(index=["job_id"], columns=["Task", "Start", "Finish", "State"])
-        plc_connector = AdsCommunication(ams_net_id=self.ams_net_id, ads_port=self.ads_port)
+        plc_connector = AdsCommunication(ams_net_id=self.ams_net_id,
+                                         ads_port=self.ads_port,
+                                         host_address=self.host_address)
         self.event_manager = EventReporter(plc=plc_connector,
                                          mapping_structure=job_event_structure,
                                          mapping_symbol='demo3.runner.fbObserver.event_message',
@@ -99,7 +101,9 @@ class MotionWatcher:
     thining  : int = field(default=100)
 
     def __post_init__(self):
-        plc_connector = AdsCommunication(ams_net_id=self.ams_net_id, ads_port=501)
+        plc_connector = AdsCommunication(ams_net_id=self.ams_net_id,
+                                         ads_port=self.ads_port,
+                                         host_address=self.host_address)
         self.event_manager = EventReporter(plc=plc_connector,
                                          mapping_structure=axis_to_plc_structure,
                                          mapping_symbol='Axes.Axis 1.ToPlc',
@@ -119,8 +123,12 @@ class DynamicRender:
     host_address : str
 
     def __post_init__(self):
-        self.job_observer = JobWatcher(ams_net_id=self.ams_net_id,ads_port=851,host_address=self.host_address)
-        self.motion_observer = MotionWatcher(ams_net_id=self.ams_net_id,ads_port=501,host_address=self.host_address)
+        self.job_observer = JobWatcher(ams_net_id=self.ams_net_id,
+                                       ads_port=851,
+                                       host_address=self.host_address)
+        self.motion_observer = MotionWatcher(ams_net_id=self.ams_net_id,
+                                             ads_port=501,
+                                             host_address=self.host_address)
         self.chart_spec = dict()
 
     def render_job_gantt(self, placeholder):
@@ -277,8 +285,10 @@ class View:
             c1_timeline_posdiff = st.empty()
         with cols[1].container(border=True, height="stretch"):
             c2_timeline_posdiff = st.empty()
-        container1_dynamic_render = DynamicRender(cls.settings_data["container"][0]["ams_net_id"], cls.settings_data["container"][0]["host"])
-        container2_dynamic_render = DynamicRender(cls.settings_data["container"][1]["ams_net_id"], cls.settings_data["container"][1]["host"])
+        container1_dynamic_render = DynamicRender(cls.settings_data["container"][0]["ams_net_id"],
+                                                  cls.settings_data["container"][0]["host"])
+        container2_dynamic_render = DynamicRender(cls.settings_data["container"][1]["ams_net_id"],
+                                                  cls.settings_data["container"][1]["host"])
         while True:
             container1_dynamic_render.render_job_gantt(c1_jobgannt)
             container2_dynamic_render.render_job_gantt(c2_jobgannt)
