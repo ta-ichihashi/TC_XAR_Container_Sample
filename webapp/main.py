@@ -12,6 +12,7 @@ import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from zoneinfo import ZoneInfo
+import os
 
 class TwinCATTime:
     EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
@@ -163,6 +164,18 @@ class View:
         toml_file_path: str = "settings.toml"
         with open(toml_file_path, mode="rb") as toml_file:
             cls.settings_data = tomllib.load(toml_file)
+        if os.environ.get("CONTAINER1_HOSTNAME") is not None:
+            cls.settings_data[0]["hostname"] = os.environ["CONTAINER1_HOSTNAME"]
+        if os.environ.get("CONTAINER2_HOSTNAME") is not None:
+            cls.settings_data["container"][1]["hostname"] = os.environ["CONTAINER2_HOSTNAME"]
+        if os.environ.get("CONTAINER1_ADDRESS") is not None:
+            cls.settings_data["container"][0]["host"] = os.environ["CONTAINER1_ADDRESS"]
+        if os.environ.get("CONTAINER2_ADDRESS") is not None:
+            cls.settings_data["container"][1]["host"] = os.environ["CONTAINER2_ADDRESS"]
+        if os.environ.get("CONTAINER1_AMSID") is not None:
+            cls.settings_data["container"][0]["ams_net_id"] = os.environ["CONTAINER1_AMSID"]
+        if os.environ.get("CONTAINER2_AMSID") is not None:
+            cls.settings_data["container"][1]["ams_net_id"] = os.environ["CONTAINER2_AMSID"]
 
     @classmethod
     def render_sidebar(cls):
@@ -267,7 +280,7 @@ if __name__ == '__main__':
     View.get_settings()
     if platform.system() == 'Linux':
         container1 = RouterConfiguration(target_host=View.settings_data["container"][0]["host"],
-                                        target_host_name=View.settings_data["container"][0]["host"],
+                                        target_host_name=View.settings_data["container"][0]["hostname"],
                                         my_ams_id=View.settings_data["container"][0]["ams_net_id"],
                                         route_name="viewer",
                                         login_user="Administrator",
@@ -275,7 +288,7 @@ if __name__ == '__main__':
                                         )
         container1.connect()
         container2 = RouterConfiguration(target_host=View.settings_data["container"][1]["host"],
-                                        target_host_name=View.settings_data["container"][1]["host"],
+                                        target_host_name=View.settings_data["container"][1]["hostname"],
                                         my_ams_id=View.settings_data["container"][1]["ams_net_id"],
                                         route_name="viewer",
                                         login_user="Administrator",

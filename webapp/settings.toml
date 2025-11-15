@@ -1,9 +1,11 @@
 [[container]]
 plc_hmi_url = "https://192.168.3.54:42343/Tc3PlcHmiWeb/Port_851/Visu/webvisu.htm"
 ams_net_id = "15.15.15.15.1.1"
-host = "tc31-xar-1"
+host = "192.168.20.3"
+hostname = "tc31-xar-1"
 
 [[container]]
 plc_hmi_url = "https://192.168.3.54:42344/Tc3PlcHmiWeb/Port_851/Visu/webvisu.htm"
 ams_net_id = "15.15.15.16.1.1"
-host = "tc31-xar-2"
+host = "192.168.20.4"
+hostname = "tc31-xar-2"

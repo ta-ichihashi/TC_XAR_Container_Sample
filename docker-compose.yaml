@@ -77,14 +77,21 @@ services:
     image: streamlit-webapp:latest
     container_name: streamlit-webapp
     hostname: streamlit-webapp
+    environment:
+      - CONTAINER1_HOSTNAME=tc31-xar-1
+      - CONTAINER2_HOSTNAME=tc31-xar-2
+      - CONTAINER1_ADDRESS=192.168.20.3
+      - CONTAINER2_ADDRESS=192.168.20.4
+      - CONTAINER1_AMSID=15.15.15.15.1.1
+      - CONTAINER2_AMSID=15.15.15.16.1.1
     ports:
       - 8501:8501
     volumes:
-      - streamlit:/app  
+      - streamlit:/app
     networks:
       container-network:
         ipv4_address: 192.168.20.5
- 
+
 volumes:
   grafana-storage: {}
   xar1data: {}
