@@ -180,6 +180,8 @@ class View:
             cls.settings_data["container"][0]["plc_hmi_url"] = os.environ["CONTAINER1_PLCHMI_URL"]
         if os.environ.get("CONTAINER2_PLCHMI_URL") is not None:
             cls.settings_data["container"][1]["plc_hmi_url"] = os.environ["CONTAINER2_PLCHMI_URL"]
+        if os.environ.get("MY_AMSID") is not None:
+            cls.setting_data["my_ams_net_id"] = os.environ["MY_AMSID"]
 
     @classmethod
     def render_sidebar(cls):
@@ -285,7 +287,7 @@ if __name__ == '__main__':
     if platform.system() == 'Linux':
         container1 = RouterConfiguration(target_host=View.settings_data["container"][0]["host"],
                                         target_host_name=View.settings_data["container"][0]["hostname"],
-                                        my_ams_id=View.settings_data["container"][0]["ams_net_id"],
+                                        my_ams_id=View.settings_data["my_ams_net_id"],
                                         route_name="viewer",
                                         login_user="Administrator",
                                         login_password="1"
@@ -293,7 +295,7 @@ if __name__ == '__main__':
         container1.connect()
         container2 = RouterConfiguration(target_host=View.settings_data["container"][1]["host"],
                                         target_host_name=View.settings_data["container"][1]["hostname"],
-                                        my_ams_id=View.settings_data["container"][1]["ams_net_id"],
+                                        my_ams_id=View.settings_data["my_ams_net_id"],
                                         route_name="viewer",
                                         login_user="Administrator",
                                         login_password="1"

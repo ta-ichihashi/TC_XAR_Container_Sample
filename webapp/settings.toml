@@ -1,3 +1,5 @@
+my_ams_net_id = "192.168.3.54.1.1"
+
 [[container]]
 plc_hmi_url = "https://192.168.3.54:42343/Tc3PlcHmiWeb/Port_851/Visu/webvisu.htm"
 ams_net_id = "15.15.15.15.1.1"
