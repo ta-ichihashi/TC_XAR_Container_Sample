@@ -31,4 +31,4 @@
 * C6043-0090 (Intel Core® 12th Generation) and later
 * CPxxx and C69xx with same platform Generation
 
-![](/app/static/linux_products.png)
+![](app/static/linux_products.png)
