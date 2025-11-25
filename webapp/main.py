@@ -13,6 +13,8 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from zoneinfo import ZoneInfo
 import os
+from pathlib import Path
+
 
 class TwinCATTime:
     EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
@@ -97,8 +99,8 @@ class MotionWatcher:
     ads_port : int
     host_address : str
     view_data   : pd.DataFrame = field(default_factory=pd.DataFrame)
-    row_size : int = field(default=100)
-    thining  : int = field(default=100)
+    row_size : int = field(default=200)
+    thining  : int = field(default=50)
 
     def __post_init__(self):
         plc_connector = AdsCommunication(ams_net_id=self.ams_net_id,
@@ -107,7 +109,7 @@ class MotionWatcher:
         self.event_manager = EventReporter(plc=plc_connector,
                                          mapping_structure=axis_to_plc_structure,
                                          mapping_symbol='Axes.Axis 1.ToPlc',
-                                         packkaged_num=1000)
+                                         packkaged_num=100)
 
     def get_record(self):
         while not self.event_manager.queue.empty():
@@ -199,7 +201,7 @@ class View:
     @classmethod
     def render_sidebar(cls):
         with st.sidebar:
-            st.logo("assets/beckhoff.icon.jpeg", icon_image="assets/beckhoff.icon.jpeg")
+            st.logo("static/beckhoff.icon.jpeg", icon_image="static/beckhoff.icon.jpeg")
             st.header("BECKHOFF")
 
     @classmethod
@@ -210,7 +212,9 @@ class View:
 
         return stc.html(html_code, height=height)
 
-
+    @classmethod
+    def read_markdown_file(cls, markdown_file):
+        return Path(markdown_file).read_text(encoding="utf-8")
 
     @classmethod
     def render(cls):
@@ -239,7 +243,7 @@ class View:
 
         cols_header = st.columns([2,6,2], gap=None, border=False, vertical_alignment = "center", width="stretch")
         with cols_header[0]:
-            st.image("assets/teaser_Beckhoff_TwinCAT_runtime_for_real-time_Linux.jpg", width="stretch")
+            st.image("static/teaser_Beckhoff_TwinCAT_runtime_for_real-time_Linux.jpg", width="stretch")
         with cols_header[1]:
             st.markdown(
                 """
@@ -252,11 +256,17 @@ class View:
             # st.title("TwinCAT RT Linux DEMO", width="content")
             st.markdown(const.HIDE_ST_STYLE, unsafe_allow_html=True)
         with cols_header[2]:
-            st.image("assets/Beckhoff_logo_red_cmyk.svg", width="stretch")
+            st.image("static/Beckhoff_logo_red_cmyk.svg", width="stretch")
 
         #with st.popbar(horizontal=True, gap="medium"):
         #cols = st.columns(2, gap="medium", width="stretch", vertical_alignment = "center")
-        cols = st.tabs(["TwinCAT コンテナ1","TwinCAT コンテナ2"])
+        cols = st.tabs(["TwinCAT コンテナ1","TwinCAT コンテナ2", "TwinCAT Real-time Linuxとは", "TwinCAT コンテナとは"])
+
+        bld_markdown = cls.read_markdown_file("./about_bld.md")
+        cols[2].markdown(bld_markdown, unsafe_allow_html=True)
+        container_markdown = cls.read_markdown_file("./about_container.md")
+        cols[3].markdown(container_markdown, unsafe_allow_html=True)
+
         #with cols[0]:
         #    st.header("TwinCAT コンテナ1", divider = "red")
             #st.write("TF1810 PLC HMI Web")
@@ -294,7 +304,7 @@ class View:
             container2_dynamic_render.render_job_gantt(c2_jobgannt)
             container1_dynamic_render.render_motion_activity(c1_motion_table, c1_timeline_pos, c1_timeline_posdiff)
             container2_dynamic_render.render_motion_activity(c2_motion_table, c2_timeline_pos, c2_timeline_posdiff)
-            time.sleep(1)
+            time.sleep(0.1)
 
 
 if __name__ == '__main__':

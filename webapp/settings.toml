@@ -1,14 +1,14 @@
-my_ams_net_id = "192.168.3.54.1.1"
-my_host = "192.168.3.54"
+my_ams_net_id = "169.254.205.0.1.1"
+my_host = "169.254.205.0"
 
 [[container]]
-plc_hmi_url = "https://192.168.3.54:42343/Tc3PlcHmiWeb/Port_851/Visu/webvisu.htm"
+plc_hmi_url = "https://169.254.205.0:42343/Tc3PlcHmiWeb/Port_851/Visu/webvisu.htm"
 ams_net_id = "15.15.15.15.1.1"
 host = "192.168.20.3"
 hostname = "tc31-xar-1"
 
 [[container]]
-plc_hmi_url = "https://192.168.3.54:42344/Tc3PlcHmiWeb/Port_851/Visu/webvisu.htm"
+plc_hmi_url = "https://169.254.205.0:42344/Tc3PlcHmiWeb/Port_851/Visu/webvisu.htm"
 ams_net_id = "15.15.15.16.1.1"
 host = "192.168.20.4"
 hostname = "tc31-xar-2"
